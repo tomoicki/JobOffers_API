@@ -18,6 +18,7 @@ cnx = connection2db(env['PostgreSQL_host'], env['PostgreSQL_port'], env['Postgre
 Session = sessionmaker(bind=cnx)
 s = Session()
 
+res = s.query(JobOffer).all()
 
 app = Flask(__name__)
 
@@ -60,8 +61,8 @@ def tablelist():
 @app.route('/showtable')
 def show_table():
     table_name = request.args.get('table', None)
-    query = s.query(ChildFinder.find_kid(table_name))
-    result = [{'job offer': offer} for offer in query]
+    query = s.query(find_table(table_name)).all()
+    result = [{'job offer': offer.title} for offer in query]
     return {'all offers': result}
     # column = request.args.get('column', None)
     # row = request.args.get('row', None)
