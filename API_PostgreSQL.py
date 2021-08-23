@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
-from sqlalchemy import inspect
+from sqlalchemy import inspect, select, text
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.sql import table, text
+from sqlalchemy.sql import table
 import pandas
 from os import environ as env
 from dotenv import load_dotenv
@@ -17,8 +17,9 @@ cnx = connection2db(env['PostgreSQL_host'], env['PostgreSQL_port'], env['Postgre
 #  create session
 Session = sessionmaker(bind=cnx)
 s = Session()
-
-res = s.query(JobOffer).all()
+textual_sql = text('SELECT * FROM "JobOffer"')
+for user_obj in s.execute(textual_sql).scalars():
+    print(user_obj)
 
 app = Flask(__name__)
 

@@ -53,25 +53,25 @@ class JobOffer(Base):
     company_name = Column(String, ForeignKey('Company.company'))
     from_jobsite = Column(String, ForeignKey('Jobsite.jobsite'))
     company = relationship("Company",
-                              back_populates="company_to_job_offer")
+                           back_populates="company_to_job_offer")
     jobsite = relationship("Jobsite",
-                              back_populates="jobsite_to_job_offer")
+                           back_populates="jobsite_to_job_offer")
     #  many to many
     location = relationship("Location",
-                               secondary=association_JobOffer_Location,
-                               back_populates='location_to_job_offer')
+                            secondary=association_JobOffer_Location,
+                            back_populates='location_to_job_offer')
     experience = relationship("Experience",
-                                 secondary=association_JobOffer_Experience,
-                                 back_populates='experience_to_job_offer')
+                              secondary=association_JobOffer_Experience,
+                              back_populates='experience_to_job_offer')
     employment_type = relationship("Employment_type",
-                                      secondary=association_JobOffer_Employment_type,
-                                      back_populates='employment_type_to_job_offer')
+                                   secondary=association_JobOffer_Employment_type,
+                                   back_populates='employment_type_to_job_offer')
     skill_must = relationship("Skill",
-                                 secondary=association_JobOffer_Skill_must,
-                                 back_populates='skill_must_to_job_offer')
+                              secondary=association_JobOffer_Skill_must,
+                              back_populates='skill_must_to_job_offer')
     skill_nice = relationship("Skill",
-                                 secondary=association_JobOffer_Skill_nice,
-                                 back_populates='skill_nice_to_job_offer')
+                              secondary=association_JobOffer_Skill_nice,
+                              back_populates='skill_nice_to_job_offer')
 
 
 class Company(Base):
