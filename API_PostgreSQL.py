@@ -12,14 +12,14 @@ from utilities.tables_declaration import *
 load_dotenv()
 
 #  make connection with PostgreSQL
-cnx = connection2db(env['PostgreSQL_host'], env['PostgreSQL_port'], env['PostgreSQL_user'],
-                    env['PostgreSQL_password'], env['PostgreSQL_db_name'])
+cnx = connection2db(env['PostgreSQL_host2'], env['PostgreSQL_port2'], env['PostgreSQL_user2'],
+                    env['PostgreSQL_password2'], env['PostgreSQL_db_name2'])
 #  create session
 Session = sessionmaker(bind=cnx)
 s = Session()
-textual_sql = text('SELECT * FROM "JobOffer"')
-for user_obj in s.execute(textual_sql).scalars():
-    print(user_obj)
+# textual_sql = text('SELECT * FROM "JobOffer"')
+# for user_obj in s.execute(textual_sql):
+#     print(user_obj)
 
 app = Flask(__name__)
 
@@ -31,7 +31,7 @@ def info():
     <div>The data is stored on remote PostgreSQL database.</div>
     <div>To get the data you have to insert correct link into your browser address bar.</div>
     <div>To get currently stored Tables go to:</div>
-    <div>/tablelist</div>
+    <div>/showtable</div>
     <div>To get whole data from selected Table you have to use:</div>
     <div>/showtable?table=table_name</div>
     <div>replace table_name with real Table name that is stored in DB.</div>
@@ -51,20 +51,27 @@ def info():
     return readme
 
 
-@app.route('/tablelist')
-def tablelist():
-    inspector = inspect(cnx)
-    # tables = dict(zip([i for i in range(len(inspector.get_table_names()))],
-    #                   [item for item in inspector.get_table_names()]))
-    return {"tablelist": inspector.get_table_names()}
-
-
 @app.route('/showtable')
 def show_table():
-    table_name = request.args.get('table', None)
-    query = s.query(find_table(table_name)).all()
-    result = [{'job offer': offer.title} for offer in query]
-    return {'all offers': result}
+    table_name = request.args.get("table", False)
+    table_as_schema = find_table(table_name)
+    if not table_name:
+        inspector = inspect(cnx)
+        return {"tablelist": inspector.get_table_names()}
+    else:
+        column = request.args.get("column", False)
+        row = request.args.get("row", False)
+        if not column and not row:
+            query = s.query(table_as_schema).all()
+            for item in query:
+                print(item)
+                print(item.__dict__)
+            result = [{'job offer': offer.__dict__} for offer in query]
+            return {'all offers': result}
+        elif not row:
+            textual_sql = "SELECT %s FROM %s"
+            res = cnx.execute(textual_sql, column, table_name)
+            print(res)
     # column = request.args.get('column', None)
     # row = request.args.get('row', None)
     # if tablee:
