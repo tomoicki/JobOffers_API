@@ -1,17 +1,16 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 from sqlalchemy import inspect
 import pandas
 from os import environ as env
 from dotenv import load_dotenv
+from jinja2 import Template
 from utilities.PostgreSQL_connection_functions import connection2db
-
 
 load_dotenv()
 
 #  make connection with PostgreSQL
 cnx = connection2db(env['PostgreSQL_host2'], env['PostgreSQL_port2'], env['PostgreSQL_user2'],
                     env['PostgreSQL_password2'], env['PostgreSQL_db_name2'])
-
 
 app = Flask(__name__)
 
@@ -23,7 +22,12 @@ def info():
     <div>The data is stored on remote PostgreSQL database.</div>
     <div>To get the data, you have to insert correct link into your browser address bar.</div>
     <div>To get currently stored Tables go to:</div>
-    <div>/showtable</div>
+    <div>/showtable
+        <select name="nazwa" size="w">
+            <option>Tu wpisz pierwszą możliwość</option>
+            <option>Tu wpisz drugą możliwość</option>
+        </select>
+    </div>
     <div>To get whole data from selected Table you have to use:</div>
     <div>/showtable?table=table_name</div>
     <div>replace table_name with real Table name that is stored in DB.</div>
@@ -52,6 +56,20 @@ def info():
     <div>Order of all & parameters doesnt matter.</div>
     """
     return readme
+
+
+@app.route('/t')
+def scroll():
+    inspector = inspect(cnx)
+    li = inspector.get_table_names()
+    text_to_html = f"""<div>
+        <select name="nazwa" size="w">
+            <option>Tu wpisz pierwszą możliwość</option>
+            <option>Tu wpisz pierwszą możliwość</option>
+            <option>Tu wpisz drugą możliwość</option>
+        </select>
+    </div>"""
+    return render_template('template.html', my_string="Wheeeee!", my_list=[0,1,2,3,4,5])
 
 
 @app.route('/showtable')
@@ -110,5 +128,3 @@ def show_table():
 if __name__ == '__main__':
     # app.run(debug=False, host='192.168.222.116')
     app.run(debug=False)
-
-
