@@ -1,5 +1,5 @@
 from flask import Flask
-from bson.json_util import dumps
+import pandas
 from os import environ as env
 from dotenv import load_dotenv
 from utilities.MongoDB_connection_functions import connection_to_mongodb
@@ -16,8 +16,10 @@ def get_users():
     #  create connection with MongoDB
     collection = connection_to_mongodb(env['mongoDB_host'], env['mongoDB_port'],
                                        env['mongoDB_db_name'], env['mongoDB_collection_name'])
-    retrieved_users = dumps(collection.find())
-    return retrieved_users
+    data = pandas.DataFrame(list(collection.find()))
+    data.drop(columns=['_id'], inplace=True)
+    data = data.to_dict("records")
+    return {'data': data}
 
 
 if __name__ == '__main__':
