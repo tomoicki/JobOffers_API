@@ -25,7 +25,7 @@ def info():
     readme = f"""
     <div>You can get data about job offers scraped from nofluffjobs.com and justjoin.it.</div>
     <div>The data is stored on remote PostgreSQL database.</div>
-    <div>To get the data you have to insert correct link into your browser address bar.</div>
+    <div>To get the data, you have to insert correct link into your browser address bar.</div>
     <div>To get currently stored Tables go to:</div>
     <div>/showtable</div>
     <div>To get whole data from selected Table you have to use:</div>
@@ -38,15 +38,23 @@ def info():
     <div>/showtable?table=JobOffer&columns=title</div>
     <div>to get data from columns 'id' and 'title' in 'JobOffer' your link needs to be:</div>
     <div>/showtable?table=JobOffer&columns=id,title</div>
-    <div>You can also use Query-like functionality "SELECT * FROM table_name WHERE key operator value</div>
+    <div>You can also use Query-like functionality "SELECT * FROM table_name WHERE key1 operator1 value1"</div>
     <div>For example to execute "SELECT * FROM JobOffer WHERE b2b_min > 0" your link would need to look like:</div>
-    <div>/showtable?table=JobOffer&key=b2b_min&operator=>&value=0</div>
+    <div>/showtable?table=JobOffer&key1=b2b_min&operator1=>&value1=0</div>
     <div>For example to execute "SELECT * FROM JobOffer WHERE expired = true" your link would need to look like:</div>
-    <div>/showtable?table=JobOffer&key=expired&operator==&value=true</div>
-    <div>Finally, to get just the value of table[row][column] add both &row= and &column= . Example:</div>
-    <div>/showtable?table=JobOffer&column=title&row=4</div>
-    <div>/showtable?table=JobOffer&row=4&column=title</div>
-    <div>Order of &column and &row doesn't matter, both above queries will give same response.</div>
+    <div>/showtable?table=JobOffer&key1=expired&operator1==&value1=true</div>
+    <div>You can also add columns=column_name for query to be "SELECT column_name" instead of "SELECT *"</div>
+    <div>Example for query "SELECT title FROM JobOffer WHERE expired = true"</div>
+    <div>/showtable?table=JobOffer&columns=title&key1=expired&operator1==&value1=true</div>
+    <div>Unfortunately, in query with WHERE you can only provide 1 column_name or * for all columns</div>
+    <div>WHERE query can take up to three sets of key,operator,value.</div>
+    <div>For example to get only title of those job offers that have b2b_min>0 and permanent_min>0 and mandate_min>0</div>
+    <div>which translates into "SELECT title FROM JobOffer WHERE b2b_min>0 and permanent_min>0 and mandate_min>0"</div>
+    <div>your link would look:</div>
+    <div>/showtable?table=JobOffer&columns=title&key1=b2b_min&operator1=>&value1=0&key2=permanent_min&operator2=>&value2=0&key3=mandate_min&operator3=>&value3=0</div>
+    <div>Alternatively, to get all columns replace title with *</div>
+    <div>/showtable?table=JobOffer&columns=*&key1=b2b_min&operator1=>&value1=0&key2=permanent_min&operator2=>&value2=0&key3=mandate_min&operator3=>&value3=0</div>
+    <div>Order of all & parameters doesnt matter.</div>
     """
     return readme
 
@@ -59,16 +67,44 @@ def show_table():
         return {"tablelist": inspector.get_table_names()}
     else:
         columns = request.args.get("columns", False)
-        key = request.args.get("key", False)
-        operator = request.args.get("operator", False)
-        value = request.args.get("value", False)
-        if columns:
+        key1 = request.args.get("key1", False)
+        operator1 = request.args.get("operator1", False)
+        value1 = request.args.get("value1", False)
+        key2 = request.args.get("key2", False)
+        operator2 = request.args.get("operator2", False)
+        value2 = request.args.get("value2", False)
+        key3 = request.args.get("key3", False)
+        operator3 = request.args.get("operator3", False)
+        value3 = request.args.get("value3", False)
+        if columns and key1 and operator1 and value2 and key2 and operator2 and value2 and key3 and operator3 and value3:
+            select_txt = f"SELECT {columns} FROM \"{table_name}\""
+            where_txt = f" WHERE \"{table_name}\".{key1}{operator1}%s"
+            and1_txt = f" and \"{table_name}\".{key2}{operator2}%s"
+            and2_txt = f" and \"{table_name}\".{key3}{operator3}%s"
+            sql_txt = select_txt + where_txt + and1_txt + and2_txt
+            query = pandas.read_sql(sql_txt, con=cnx, params=(value1, value2, value3,)).to_dict("records")
+            return {'all offers': [{f'{table_name}': line} for line in query]}
+        elif columns and key1 and operator1 and value1 and value2 and key2 and operator2 and value2:
+            select_txt = f"SELECT {columns} FROM \"{table_name}\""
+            where_txt = f" WHERE \"{table_name}\".{key1}{operator1}%s"
+            and1_txt = f" and \"{table_name}\".{key2}{operator2}%s"
+            sql_txt = select_txt + where_txt + and1_txt
+            query = pandas.read_sql(sql_txt, con=cnx, params=(value1, value2,)).to_dict("records")
+            return {'all offers': [{f'{table_name}': line} for line in query]}
+        elif columns and key1 and operator1 and value1:
+            select_txt = f"SELECT {columns} FROM \"{table_name}\""
+            where_txt = f" WHERE \"{table_name}\".{key1}{operator1}%s"
+            sql_txt = select_txt + where_txt
+            query = pandas.read_sql(sql_txt, con=cnx, params=(value1,)).to_dict("records")
+            return {'all offers': [{f'{table_name}': line} for line in query]}
+        elif columns:
             columns = columns.split(',')
             query = pandas.read_sql_table(table_name, con=cnx, columns=columns).to_dict("records")
             return {'all offers': [{f'{table_name}': line} for line in query]}
-        elif key and operator and value:
-            sql_txt = f"SELECT * FROM \"{table_name}\" WHERE \"{table_name}\".{key}{operator}%s"
-            query = pandas.read_sql_query(sql_txt, con=cnx, params=(value,)).to_dict("records")
+        elif key1 and operator1 and value1:
+            print("just key, operator, value")
+            sql_txt = f"SELECT * FROM \"{table_name}\" WHERE \"{table_name}\".{key1}{operator1}%s"
+            query = pandas.read_sql_query(sql_txt, con=cnx, params=(value1,)).to_dict("records")
             return {'all offers': [{f'{table_name}': line} for line in query]}
         else:
             query = pandas.read_sql_table(table_name, con=cnx).to_dict("records")
