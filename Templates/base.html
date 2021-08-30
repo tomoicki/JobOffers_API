@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+    <head>
+        <title>{{title}}</title>
+        <link rel="stylesheet" href="static/styles.css" />
+    </head>
+    <body>
+        {% block body %}
+        <form method="post" action="/raw">
+            <input value='RAW' type='SUBMIT'>
+        </form>
+        <form method="post" action="/interface">
+            <input value='INTERFACE' type='SUBMIT'>
+        </form>
+        {% endblock %}
+    </body>
+</html>

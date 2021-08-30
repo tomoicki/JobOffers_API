@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block body %}
+<form method='get'>
+<table>
+<p>Pick one table:</p>
+    <select name="table" size="w">
+        {% for table in tables %}
+            <option value=JobOffer>{{table}}</option>
+        {% endfor %}
+    </select>
+</table>
+<p><input value='Show table' type="submit"></p>
+</form>
+{% block content %}
+<div>
+    <table class="table">
+        <tr class="table__header">
+            {% for header in headers %}
+                <th class="table__cell">{{header}}</th>
+            {% endfor %}
+        </tr>
+        {% for row in dataframe %}
+            <tr class="table__row">
+                {% for item in row %}
+                <td class="table__cell">{{item}}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}
+{% endblock %}

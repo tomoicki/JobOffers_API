@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block body %}
+<div >
+    You can get data about job offers scraped from <a href="https://nofluffjobs.com" target="_blank">nofluffjobs.com</a> and <a href="https://justjoin.it" target="_blank">justjoin.it.</a>
+    The data is stored on remote PostgreSQL database.
+    To get the data, you have to insert correct link into your browser address bar.
+    To get currently stored Tables go to:
+    <a href="/raw/showtable" target="_blank">/raw/showtable</a>
+    To get whole data from selected Table you have to use:
+    /raw/showtable?table=table_name
+    replace table_name with real Table name that is stored in DB.
+    For example to get data from table 'JobOffer' your link would look:
+    <a href="/raw/showtable?table=JobOffer" target="_blank">/raw/showtable?table=JobOffer</a>
+    to narrow it down and get only certain columns from table you need to add ?columns=column_name1,column_name2,column_name3
+    For example to only get data from column 'title' in 'JobOffer' your link needs to be:
+    <a href="/raw/showtable?table=JobOffer&columns=title" target="_blank">/raw/showtable?table=JobOffer&columns=title</a>
+    to get data from columns 'id' and 'title' in 'JobOffer' your link needs to be:
+    <a href="/raw/showtable?table=JobOffer&columns=id,title" target="_blank">/raw/showtable?table=JobOffer&columns=id,title</a>
+    You can also use Query-like functionality "SELECT * FROM table_name WHERE key1 operator1 value1"
+    For example to execute "SELECT * FROM JobOffer WHERE b2b_min > 0" your link would need to look like:
+    <a href="/raw/showtable?table=JobOffer&key1=b2b_min&operator1=>&value1=0" target="_blank">/raw/showtable?table=JobOffer&key1=b2b_min&operator1=>&value1=0</a>
+    For example to execute "SELECT * FROM JobOffer WHERE expired = true" your link would need to look like:
+    <a href="/raw/showtable?table=JobOffer&key1=expired&operator1==&value1=true" target="_blank">/raw/showtable?table=JobOffer&key1=expired&operator1==&value1=true</a>
+    You can also add columns=column_name for query to be "SELECT column_name" instead of "SELECT *"
+    Example for query "SELECT id,title,expired FROM JobOffer WHERE expired = true"
+    <a href="/raw/showtable?table=JobOffer&columns=id,title,expired&key1=expired&operator1==&value1=true" target="_blank">/raw/showtable?table=JobOffer&columns=id,title,expired&key1=expired&operator1==&value1=true</a>
+    WHERE query can take up to three sets of key,operator,value.
+    For example to get only title of those job offers that have b2b_min>0 and permanent_min>0 and mandate_min>0
+    which translates into "SELECT title FROM JobOffer WHERE b2b_min>0 and permanent_min>0 and mandate_min>0"
+    your link would look:
+    <a href="/raw/showtable?table=JobOffer&columns=title&key1=b2b_min&operator1=>&value1=0&key2=permanent_min&operator2=>&value2=0&key3=mandate_min&operator3=>&value3=0" target="_blank">/raw/showtable?table=JobOffer&columns=title&key1=b2b_min&operator1=>&value1=0&key2=permanent_min&operator2=>&value2=0&key3=mandate_min&operator3=>&value3=0</a>
+    Alternatively, to get all columns replace title with *
+    <a href="/raw/showtable?table=JobOffer&columns=*&key1=b2b_min&operator1=>&value1=0&key2=permanent_min&operator2=>&value2=0&key3=mandate_min&operator3=>&value3=0" target="_blank">/raw/showtable?table=JobOffer&columns=*&key1=b2b_min&operator1=>&value1=0&key2=permanent_min&operator2=>&value2=0&key3=mandate_min&operator3=>&value3=0</a>
+    Order of all & parameters doesnt matter.
+</div>
+{% endblock %}

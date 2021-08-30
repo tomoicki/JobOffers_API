@@ -1,0 +1,18 @@
+div {
+    white-space: pre;
+}
+.table {
+    background-color: #f5f5f5;
+}
+
+.table__row:nth-child(even) {
+    background-color: #e5e5e5;
+}
+
+.table__header {
+    text-align: center;
+}
+
+.table__cell {
+    text-align: center;
+}
