@@ -1,4 +1,53 @@
-div {
+input {
+    text-align: center;
+}
+
+select {
+    text-align-last:center;
+}
+
+.everything {
+    position: center;
+}
+
+.results {
+    display: flex;
+    justify-content: center;
+}
+
+.query {
+    display: flex;
+    justify-content: center;
+}
+
+.query__button_showtable {
+    margin: 30px;
+    float: bottom;
+}
+
+.query__select_from {
+    float: left;
+}
+
+.query__where_and {
+    margin-left: 5px;
+    float: left;
+}
+
+.query__where_and__where {
+    float: top;
+}
+
+.query__where_and__and1 {
+    margin-left: 22px;
+}
+
+.query__where_and__and2 {
+    float: bottom;
+    margin-left: 22px;
+}
+
+.raw {
     white-space: pre;
 }
 .table {

@@ -2,9 +2,9 @@
 {% block body %}
 <h2>SELECT FROM WHERE</h2>
 <div class="everything">
-    <div class="query_form">
-        <form method='get'>
-                <div class="query__select_from">
+    <div class="query">
+        <form class="query__form" method='get'>
+            <div class="query__select">
                 SELECT <input type="textbox" name="columns" value={{old_dict['columns']}}> FROM
                 <select name="table" size="w">
                     <option>--- Choose column ---</option>
@@ -12,9 +12,9 @@
                         <option value={{table}}>{{table}}</option>
                     {% endfor %}
                 </select>
-                </div>
+            </div>
             <div class="query__where_and">
-                <div class="query__where_and__where">
+                <div class="query__where__where">
                     WHERE <input type="textbox" name="key1" value={{old_dict['key1']}}>
                         <select name="operator1" size="w">
                         {% for option in options %}
@@ -23,7 +23,7 @@
                         </select>
                     <input type="textbox" name="value1" value={{old_dict['value1']}}>
                 </div>
-                <div class="query__where_and__and1">
+                <div class="query__where__and1">
                     AND <input type="textbox" name="key2" value={{old_dict['key2']}}>
                         <select name="operator2" size="w">
                         {% for option in options %}
@@ -32,7 +32,7 @@
                         </select>
                     <input type="textbox" name="value2" value={{old_dict['value2']}}>
                 </div>
-                <div class="query__where_and__and2">
+                <div class="query__where__and2">
                     AND <input type="textbox" name="key3" value={{old_dict['key3']}}>
                         <select name="operator3" size="w">
                         {% for option in options %}
@@ -42,7 +42,7 @@
                     <input type="textbox" name="value3" value={{old_dict['value3']}}>
                 </div>
             </div>
-            <div class="query__button_showtable">
+            <div class="query__button">
                 <input value='Show table' type="submit">
             </div>
         </form>
