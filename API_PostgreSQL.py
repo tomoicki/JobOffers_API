@@ -22,7 +22,7 @@ def welcome():
 @app.route('/showtable', methods=['POST', 'GET'])
 def showtable():
     old_values = []
-    options = ['=', '>', '<', '>=', '<=', '<>', 'LIKE']
+    operators = ['=', '>', '<', '>=', '<=', '<>', 'LIKE']
     inspector = inspect(cnx)
     list_of_tables = inspector.get_table_names()
     table_name = request.args.get("table", False)
@@ -50,8 +50,8 @@ def showtable():
             sql_txt = select_txt + where_txt + and1_txt + and2_txt
             dataframe = pandas.read_sql(sql_txt, con=cnx, params=(value1, value2, value3,))
             headers = dataframe.columns.to_list()
-            return render_template('interface.html', tables=list_of_tables, headers=headers,
-                                   dataframe=dataframe.values.tolist(), options=options, old_dict=old_dict)
+            return render_template('interface.html', title='Interface', tables=list_of_tables, headers=headers,
+                                   dataframe=dataframe.values.tolist(), operators=operators, old_dict=old_dict)
         elif key1 and operator1 and value1 and value2 and key2 and operator2 and value2:
             select_txt = f"SELECT {columns} FROM \"{table_name}\""
             where_txt = f" WHERE \"{table_name}\".{key1} {operator1}%s"
@@ -59,30 +59,31 @@ def showtable():
             sql_txt = select_txt + where_txt + and1_txt
             dataframe = pandas.read_sql(sql_txt, con=cnx, params=(value1, value2,))
             headers = dataframe.columns.to_list()
-            return render_template('interface.html', tables=list_of_tables, headers=headers,
-                                   dataframe=dataframe.values.tolist(), options=options, old_dict=old_dict)
+            return render_template('interface.html', title='Interface', tables=list_of_tables, headers=headers,
+                                   dataframe=dataframe.values.tolist(), operators=operators, old_dict=old_dict)
         elif key1 and operator1 and value1:
             select_txt = f"SELECT {columns} FROM \"{table_name}\""
             where_txt = f" WHERE \"{table_name}\".{key1} {operator1}%s"
             sql_txt = select_txt + where_txt
             dataframe = pandas.read_sql(sql_txt, con=cnx, params=(value1,))
             headers = dataframe.columns.to_list()
-            return render_template('interface.html', tables=list_of_tables, headers=headers,
-                                   dataframe=dataframe.values.tolist(), options=options, old_dict=old_dict)
+            return render_template('interface.html', title='Interface', tables=list_of_tables, headers=headers,
+                                   dataframe=dataframe.values.tolist(), operators=operators, old_dict=old_dict)
         elif len(columns) >= 2:
             columns = columns.split(',')
             dataframe = pandas.read_sql_table(table_name, con=cnx, columns=columns)
             headers = dataframe.columns.to_list()
-            return render_template('interface.html', tables=list_of_tables, headers=headers,
-                                   dataframe=dataframe.values.tolist(), options=options, old_dict=old_dict)
+            return render_template('interface.html', title='Interface', tables=list_of_tables, headers=headers,
+                                   dataframe=dataframe.values.tolist(), operators=operators, old_dict=old_dict)
         else:
             dataframe = pandas.read_sql_table(table_name, con=cnx)
             headers = dataframe.columns.to_list()
-            return render_template('interface.html', tables=list_of_tables, headers=headers,
-                                   dataframe=dataframe.values.tolist(), options=options, old_dict=old_dict)
+            return render_template('interface.html', title='Interface', tables=list_of_tables, headers=headers,
+                                   dataframe=dataframe.values.tolist(), operators=operators, old_dict=old_dict)
     else:
         old_dict = dict(zip(old_keys, old_values))
-        return render_template('interface.html', tables=list_of_tables, options=options, old_dict=old_dict)
+        return render_template('interface.html', title='Interface', tables=list_of_tables,
+                               operators=operators, old_dict=old_dict)
 
 
 @app.route('/raw', methods=['POST', 'GET'])

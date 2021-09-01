@@ -6,62 +6,60 @@ select {
     text-align-last:center;
 }
 
-.everything {
-    position: center;
-}
-
-.results {
+.description {
     display: flex;
     justify-content: center;
+}
+
+.everything {
+    position: center;
 }
 
 .query {
     display: flex;
     justify-content: center;
 }
-
-.query__button_showtable {
-    margin: 30px;
-    float: bottom;
+.query__button {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
 }
-
-.query__select_from {
+.query__select {
     float: left;
 }
-
-.query__where_and {
+.query__where {
     margin-left: 5px;
     float: left;
 }
-
-.query__where_and__where {
+.query__where__where {
     float: top;
 }
-
-.query__where_and__and1 {
+.query__where__and1 {
+    margin-left: 22px;
+}
+.query__where__and2 {
+    float: bottom;
     margin-left: 22px;
 }
 
-.query__where_and__and2 {
-    float: bottom;
-    margin-left: 22px;
+.results {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+.results__table {
+    background-color: #f5f5f5;
+}
+.table__row:nth-child(even) {
+    background-color: #e5e5e5;
+}
+.table__header {
+    text-align: center;
+}
+.table__cell {
+    text-align: center;
 }
 
 .raw {
     white-space: pre;
-}
-.table {
-    background-color: #f5f5f5;
-}
-
-.table__row:nth-child(even) {
-    background-color: #e5e5e5;
-}
-
-.table__header {
-    text-align: center;
-}
-
-.table__cell {
-    text-align: center;
 }
