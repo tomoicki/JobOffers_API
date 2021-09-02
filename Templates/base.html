@@ -5,13 +5,27 @@
         <link rel="stylesheet" href="static/styles.css" />
     </head>
     <body>
+        <div class="navbar">
+            <form action="/">
+                <input type="submit" value="Home" />
+            </form>
+            <form action="/raw">
+                <input type="submit" value="Raw" />
+            </form>
+            <form action="/showtable">
+                <input type="submit" value="Interface" />
+            </form>
+            <form action="/admin">
+                <input type="submit" value="Admin" />
+            </form>
+        </div>
         {% block body %}
-        <form method="post" action="/raw">
-            <input value='RAW' type='SUBMIT'>
-        </form>
-        <form method="post" action="/showtable">
-            <input value='INTERFACE' type='SUBMIT'>
-        </form>
+        <div class="welcome">
+            Portal to browse data previously scraped from  <a href="https://nofluffjobs.com" target="_blank">nofluffjobs.com</a> and <a href="https://justjoin.it" target="_blank">justjoin.it.</a>
+            The data is stored on remote PostgreSQL database.
+            Pick "Raw" if you need json format results.
+            Or go to "Interface" for more user friendly previev.
+        </div>
         {% endblock %}
     </body>
 </html>

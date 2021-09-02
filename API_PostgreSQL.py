@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, flash, redirect, url_for
 from sqlalchemy import inspect
 import pandas
 from os import environ as env
@@ -12,6 +12,7 @@ cnx = connection2db(env['PostgreSQL_host2'], env['PostgreSQL_port2'], env['Postg
                     env['PostgreSQL_password2'], env['PostgreSQL_db_name2'])
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'would like not to not have this but apparently i have to'
 
 
 @app.route('/')
@@ -19,7 +20,7 @@ def welcome():
     return render_template('base.html', title='Welcome!')
 
 
-@app.route('/showtable', methods=['POST', 'GET'])
+@app.route('/showtable')
 def showtable():
     old_values = []
     operators = ['=', '>', '<', '>=', '<=', '<>', 'LIKE']
@@ -86,12 +87,12 @@ def showtable():
                                operators=operators, old_dict=old_dict)
 
 
-@app.route('/raw', methods=['POST', 'GET'])
+@app.route('/raw')
 def raw():
     return render_template('raw.html', title='Raw version')
 
 
-@app.route('/raw/showtable', methods=['POST', 'GET'])
+@app.route('/raw/showtable')
 def raw_showtable():
     table_name = request.args.get("table", False)
     if not table_name:
@@ -142,6 +143,28 @@ def raw_showtable():
             return {'all offers': [{f'{table_name}': line} for line in query]}
         else:
             return {'message': 'something went wrong'}
+
+
+@app.route('/admin')
+def admin():
+    return render_template('admin.html', title='Login as admin')
+
+
+@app.route('/admin', methods=['POST'])
+def admin_login():
+    name = request.form.get('name')
+    password = request.form.get('password')
+    admin_name = env['admin']
+    admin_password = env['password']
+    if name != admin_name or password != admin_password:
+        flash('Please check your login details and try again.')
+        return redirect(url_for('admin'))
+    return redirect(url_for('admin_panel'))
+
+
+@app.route('/admin_panel')
+def admin_panel():
+    return render_template('admin_panel.html')
 
 
 if __name__ == '__main__':
