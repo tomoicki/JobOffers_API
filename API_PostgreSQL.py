@@ -145,26 +145,21 @@ def raw_showtable():
             return {'message': 'something went wrong'}
 
 
-@app.route('/admin')
-def admin():
-    return render_template('admin.html', title='Login as admin')
-
-
-@app.route('/admin', methods=['POST'])
+@app.route('/admin', methods=['GET', 'POST'])
 def admin_login():
-    name = request.form.get('name')
-    password = request.form.get('password')
-    admin_name = env['admin']
-    admin_password = env['password']
-    if name != admin_name or password != admin_password:
-        flash('Please check your login details and try again.')
-        return redirect(url_for('admin'))
-    return redirect(url_for('admin_panel'))
+    if request.method == 'GET':
+        return render_template('admin.html', title='Login as admin')
+    elif request.method == 'POST':
+        name = request.form.get('name')
+        password = request.form.get('password')
+        if name != env['admin'] or password != env['password']:
+            flash('Please check your login details and try again.')
+            return redirect(url_for('admin_login'))
+        return admin_panel()
 
 
-@app.route('/admin_panel')
 def admin_panel():
-    return render_template('admin_panel.html')
+    return render_template('admin_panel.html', title="Admin panel")
 
 
 if __name__ == '__main__':
