@@ -1,16 +1,23 @@
 from flask import Flask, request, render_template, flash, redirect, url_for
 from sqlalchemy import inspect
+from sqlalchemy.orm import sessionmaker
 import pandas
 from os import environ as env
 from dotenv import load_dotenv
 from utilities.PostgreSQL_connection_functions import connection2db
+from utilities.PostgreSQL_tables_declaration import *
+from utilities.PostgreSQL_data_insert import update_tables
+import numpy as np
+import psycopg2
+from psycopg2.extensions import register_adapter, AsIs
+register_adapter(np.int64, psycopg2._psycopg.AsIs)
 
 load_dotenv()
 
 #  make connection with PostgreSQL
 cnx = connection2db(env['PostgreSQL_host2'], env['PostgreSQL_port2'], env['PostgreSQL_user2'],
                     env['PostgreSQL_password2'], env['PostgreSQL_db_name2'])
-
+Session = sessionmaker(bind=cnx)
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'would like not to not have this but apparently i have to'
 
@@ -18,6 +25,44 @@ app.config['SECRET_KEY'] = 'would like not to not have this but apparently i hav
 @app.route('/')
 def welcome():
     return render_template('base.html', title='Welcome!')
+
+
+@app.route('/admin', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'GET':
+        return render_template('admin.html', title='Login as admin')
+    elif request.method == 'POST':
+        name = request.form.get('name')
+        password = request.form.get('password')
+        if name != env['admin'] or password != env['password']:
+            flash('Please check your login details and try again.')
+            return redirect(url_for('admin_login'))
+        return render_template('admin_panel.html', title='Logged in as an admin')
+
+
+@app.route('/admin_panel', methods=['GET', 'POST'])
+def admin_panel():
+    inspector = inspect(cnx)
+    list_of_tables = inspector.get_table_names()
+    if request.method == 'GET':
+        return render_template('admin_panel.html', title="Admin panel", tables=list_of_tables)
+    elif request.method == 'POST':
+        job_offer_record = {'title': request.form.get('title'), 'location': [request.form.get('location')],
+                            'company': request.form.get('company'), 'company_size': request.form.get('company_size'),
+                            'experience': [request.form.get('experience')], 'employment_type': [request.form.get('employment_type')],
+                             'b2b_min': 0, 'b2b_max': 0, 'permanent_min': 0,
+                            'permanent_max': 0, 'mandate_min': 0, 'mandate_max': 0,
+                             'skills_must': [request.form.get('skill_must')], 'skills_nice': [request.form.get('skill_nice')],
+                            'expired': 'false', 'expired_at': '', 'scraped_at': '',
+                            'jobsite': request.form.get('jobsite'), 'offer_url': request.form.get('offer_url')}
+        job_offer_df = pandas.DataFrame(job_offer_record, index=[0])
+        print(job_offer_df)
+        update_tables(job_offer_df, Session)
+        values = request.form.get('values')
+        table = request.form.get('table')
+        values = request.form.get('values')
+        table = request.form.get('table')
+        return render_template('admin_panel.html', title=values, tables=list_of_tables)
 
 
 @app.route('/showtable')
@@ -143,23 +188,6 @@ def raw_showtable():
             return {'all offers': [{f'{table_name}': line} for line in query]}
         else:
             return {'message': 'something went wrong'}
-
-
-@app.route('/admin', methods=['GET', 'POST'])
-def admin_login():
-    if request.method == 'GET':
-        return render_template('admin.html', title='Login as admin')
-    elif request.method == 'POST':
-        name = request.form.get('name')
-        password = request.form.get('password')
-        if name != env['admin'] or password != env['password']:
-            flash('Please check your login details and try again.')
-            return redirect(url_for('admin_login'))
-        return admin_panel()
-
-
-def admin_panel():
-    return render_template('admin_panel.html', title="Admin panel")
 
 
 if __name__ == '__main__':

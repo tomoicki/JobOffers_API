@@ -1,4 +1,35 @@
 {% extends "base.html" %}
 {% block body %}
-    logged in
+    <div class="admin_panel">
+        <div class="job_offer">
+            <form class="job_offer__form" method="post" action="/admin_panel">
+                Add record to JobOffer. All other dependent tables will be populated automatically.
+                <input type="text" placeholder="title" name="title">
+                <input type="text" placeholder="location1,location2.." name="location">
+                <input type="text" placeholder="company" name="company">
+                <input type="text" placeholder="company size" name="company_size">
+                <input type="text" placeholder="intern,junior.." name="experience">
+                <input type="text" placeholder="b2b,permanent.." name="employment_type">
+                <input type="text" placeholder="skill1,skill2.." name="skill_must">
+                <input type="text" placeholder="skill1,skill2.." name="skill_nice">
+                <input type="text" placeholder="jobsite" name="jobsite">
+                <input type="text" placeholder="offer_url" name="offer_url">
+                <input value='Insert record' type="submit">
+            </form>
+        </div>
+        <div class="other_tables">
+            <form class="other_tables__form" method="post" action="/admin_panel">
+                Add record to
+                    <select name="table" size="w">
+                        <option>--- Choose column ---</option>
+                        {% for table in tables %}
+                            <option value={{table}}>{{table}}</option>
+                        {% endfor %}
+                    </select>
+                values
+                <input type="text" placeholder="value1,value2.." name="values">
+                <input value='Insert record' type="submit">
+            </form>
+        </div>
+    </div>
 {% endblock %}

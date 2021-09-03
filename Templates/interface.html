@@ -7,7 +7,7 @@
     <form class="query__form" method='get'>
         <div class="query">
             <div class="query__select">
-            SELECT <input type="textbox" name="columns" value={{old_dict['columns']}}> FROM
+            SELECT <input type="text" placeholder="column1,column2.." name="columns" value={{old_dict['columns']}}> FROM
             <select name="table" size="w">
                 <option>--- Choose column ---</option>
                 {% for table in tables %}
@@ -17,31 +17,31 @@
             </div>
             <div class="query__where">
                 <div class="query__where__where">
-                    WHERE <input type="textbox" name="key1" value={{old_dict['key1']}}>
+                    WHERE <input type="text" placeholder="column" name="key1" value={{old_dict['key1']}}>
                         <select name="operator1" size="w">
                         {% for operator in operators %}
                             <option value={{operator}}>{{operator}}</option>
                         {% endfor %}
                         </select>
-                    <input type="textbox" name="value1" value={{old_dict['value1']}}>
+                    <input type="text" placeholder="value" name="value1" value={{old_dict['value1']}}>
                 </div>
                 <div class="query__where__and1">
-                    AND <input type="textbox" name="key2" value={{old_dict['key2']}}>
+                    AND <input type="text" placeholder="column" name="key2" value={{old_dict['key2']}}>
                         <select name="operator2" size="w">
                         {% for operator in operators %}
                             <option value={{operator}}>{{operator}}</option>
                         {% endfor %}
                         </select>
-                    <input type="textbox" name="value2" value={{old_dict['value2']}}>
+                    <input type="text" placeholder="value" name="value2" value={{old_dict['value2']}}>
                 </div>
                 <div class="query__where__and2">
-                    AND <input type="textbox" name="key3" value={{old_dict['key3']}}>
+                    AND <input type="text" placeholder="column" name="key3" value={{old_dict['key3']}}>
                         <select name="operator3" size="w">
                         {% for operator in operators %}
                             <option value={{operator}}>{{operator}}</option>
                         {% endfor %}
                         </select>
-                    <input type="textbox" name="value3" value={{old_dict['value3']}}>
+                    <input type="text" placeholder="value" name="value3" value={{old_dict['value3']}}>
                 </div>
             </div>
         </div>
