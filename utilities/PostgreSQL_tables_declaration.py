@@ -116,12 +116,14 @@ class Jobsite(Base):
     name = Column(String)
     url = Column(String)
 
-    def __init__(self, name):
+    def __init__(self, name, new_url=None):
         self.id = shortuuid.uuid()
         self.name = name
         for item in self.url_list:
             if name in item:
                 self.url = item
+            else:
+                self.url = new_url
 
     #  one to many
     to_job_offer = relationship("JobOffer",
@@ -193,3 +195,12 @@ class Skill(Base):
     skill_nice_to_job_offer = relationship("JobOffer",
                                            secondary=association_JobOffer_Skill_nice,
                                            back_populates='to_skill_nice')
+
+
+tables_list = [JobOffer, Company, Jobsite, Location, Experience, EmploymentType, Skill]
+
+
+def find_table(given_name):
+    for table in tables_list:
+        if table.__name__ == given_name:
+            return table

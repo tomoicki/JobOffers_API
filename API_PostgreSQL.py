@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, flash, redirect, url_for
-from sqlalchemy import inspect
+from sqlalchemy import inspect, select, text
 from sqlalchemy.orm import sessionmaker
 import pandas
 from os import environ as env
@@ -10,16 +10,21 @@ from utilities.PostgreSQL_data_insert import update_tables
 import numpy as np
 import psycopg2
 from psycopg2.extensions import register_adapter, AsIs
+
 register_adapter(np.int64, psycopg2._psycopg.AsIs)
 
 load_dotenv()
-
+pandas.set_option('display.max_columns', None)
+pandas.set_option('display.max_rows', None)
+pandas.set_option('display.width', None)
+pandas.set_option('display.max_colwidth', 100)
+pandas.options.mode.chained_assignment = None
 #  make connection with PostgreSQL
 cnx = connection2db(env['PostgreSQL_host2'], env['PostgreSQL_port2'], env['PostgreSQL_user2'],
                     env['PostgreSQL_password2'], env['PostgreSQL_db_name2'])
 Session = sessionmaker(bind=cnx)
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'would like not to not have this but apparently i have to'
+app.config['SECRET_KEY'] = 'would like not to have this but apparently i have to'
 
 
 @app.route('/')
@@ -37,32 +42,62 @@ def admin_login():
         if name != env['admin'] or password != env['password']:
             flash('Please check your login details and try again.')
             return redirect(url_for('admin_login'))
-        return render_template('admin_panel.html', title='Logged in as an admin')
+        return redirect(url_for('admin_panel'))
 
 
 @app.route('/admin_panel', methods=['GET', 'POST'])
 def admin_panel():
+    session = Session()
+    operators = ['=', '>', '<', '>=', '<=', '<>', 'LIKE']
     inspector = inspect(cnx)
     list_of_tables = inspector.get_table_names()
+    modify_tables = [item for item in list_of_tables if 'association' not in item]
+    other_tables = [item for item in modify_tables if item != 'JobOffer']
+    title = request.form.get('title', False)
+    other_table_value = request.form.get('other_table_value', False)
+    other_table_optional = request.form.get('other_table_optional', False)
+    modify_record_column = request.form.get('modify_record_column', False)
     if request.method == 'GET':
-        return render_template('admin_panel.html', title="Admin panel", tables=list_of_tables)
+        return render_template('admin_panel.html', title="Admin panel", other_tables=other_tables,
+                               modify_tables=modify_tables, operators=operators)
     elif request.method == 'POST':
-        job_offer_record = {'title': request.form.get('title'), 'location': [request.form.get('location')],
-                            'company': request.form.get('company'), 'company_size': request.form.get('company_size'),
-                            'experience': [request.form.get('experience')], 'employment_type': [request.form.get('employment_type')],
-                             'b2b_min': 0, 'b2b_max': 0, 'permanent_min': 0,
-                            'permanent_max': 0, 'mandate_min': 0, 'mandate_max': 0,
-                             'skills_must': [request.form.get('skill_must')], 'skills_nice': [request.form.get('skill_nice')],
-                            'expired': 'false', 'expired_at': '', 'scraped_at': '',
-                            'jobsite': request.form.get('jobsite'), 'offer_url': request.form.get('offer_url')}
-        job_offer_df = pandas.DataFrame(job_offer_record, index=[0])
-        print(job_offer_df)
-        update_tables(job_offer_df, Session)
-        values = request.form.get('values')
-        table = request.form.get('table')
-        values = request.form.get('values')
-        table = request.form.get('table')
-        return render_template('admin_panel.html', title=values, tables=list_of_tables)
+        if title:
+            job_offer_record = {'title': request.form.get('title'), 'location': request.form.get('location').split(','),
+                                'company': request.form.get('company'),
+                                'company_size': request.form.get('company_size'),
+                                'experience': request.form.get('experience').split(','),
+                                'employment_type': request.form.get('employment_type').split(','),
+                                'b2b_min': 0, 'b2b_max': 0, 'permanent_min': 0,
+                                'permanent_max': 0, 'mandate_min': 0, 'mandate_max': 0,
+                                'skills_must': request.form.get('skill_must').split(','),
+                                'skills_nice': request.form.get('skill_nice').split(','),
+                                'expired': 'false', 'expired_at': '', 'scraped_at': '',
+                                'jobsite': request.form.get('jobsite'), 'offer_url': request.form.get('offer_url')}
+            keys, values = list(job_offer_record.keys()), list(job_offer_record.values())
+            job_offer_df = pandas.DataFrame([values], columns=keys)
+            update_tables(job_offer_df, Session)
+        if other_table_value:
+            table = request.form.get('other_table')
+            table_as_schema = find_table(table)
+            if other_table_optional:
+                record = table_as_schema(other_table_value, other_table_optional)
+            else:
+                record = table_as_schema(other_table_value)
+            session.add(record)
+            session.commit()
+        if modify_record_column:
+            table_name = request.form.get('modify_record_table')
+            table_as_schema = find_table(table_name)
+            operator1 = request.form.get('modify_record_operator')
+            modify_record_value = request.form.get('modify_record_value')
+            stmt = text(f"\"{table_name}\".{modify_record_column} {operator1} \'{modify_record_value}\'")
+            record = session.query(table_as_schema).filter(stmt).first()
+            execute = table_as_schema.__table__.update().where(table_as_schema.id == record.__dict__['id']).values(
+                {"name": "dunno"})
+            session.execute(execute)
+            session.commit()
+        return render_template('admin_panel.html', other_tables=other_tables, modify_tables=modify_tables,
+                               operators=operators)
 
 
 @app.route('/showtable')
