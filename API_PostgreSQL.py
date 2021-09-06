@@ -74,17 +74,29 @@ def admin_panel():
                                 'expired': 'false', 'expired_at': '', 'scraped_at': '',
                                 'jobsite': request.form.get('jobsite'), 'offer_url': request.form.get('offer_url')}
             keys, values = list(job_offer_record.keys()), list(job_offer_record.values())
-            job_offer_df = pandas.DataFrame([values], columns=keys)
-            update_tables(job_offer_df, Session)
+            try:
+                job_offer_df = pandas.DataFrame([values], columns=keys)
+                update_tables(job_offer_df, Session)
+                flash('Offer successfully added.', category='job_offer')
+                return redirect(url_for('admin_panel'))
+            except:
+                flash("Couldn't add new job offer.")
+                return redirect(url_for('admin_panel'))
         if other_table_value:
             table = request.form.get('other_table')
             table_as_schema = find_table(table)
-            if other_table_optional:
-                record = table_as_schema(other_table_value, other_table_optional)
-            else:
-                record = table_as_schema(other_table_value)
-            session.add(record)
-            session.commit()
+            try:
+                if other_table_optional:
+                    record = table_as_schema(other_table_value, other_table_optional)
+                else:
+                    record = table_as_schema(other_table_value)
+                session.add(record)
+                session.commit()
+                flash(f'Record to {table} successfully added.', category='other_table')
+                return redirect(url_for('admin_panel'))
+            except:
+                flash("Couldn't add new record.")
+                return redirect(url_for('admin_panel'))
         if modify_record_column:
             table_name = request.form.get('modify_record_table')
             table_as_schema = find_table(table_name)

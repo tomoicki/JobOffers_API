@@ -16,6 +16,13 @@
                 <input type="text" placeholder="offer_url" name="offer_url">
                 <input value='Insert record' type="submit">
             </form>
+            <div class="notification">
+                {% with job_offer_add_msg = get_flashed_messages(with_categories=True, category_filter=['job_offer']) %}
+                {% if job_offer_add_msg %}
+                    {{ job_offer_add_msg[0] }}
+                {% endif %}
+                {% endwith %}
+            </div>
         </div>
         <div class="other_table">
             <form class="other_table__form" method="post" action="/admin_panel">
@@ -31,6 +38,13 @@
                 <input type="text" placeholder="optional value" name="other_table_optional">
                 <input value='add' type="submit">
             </form>
+            <div class="notification">
+                {% with record_to_table_msg = get_flashed_messages(with_categories=True, category_filter=['other_table']) %}
+                {% if record_to_table_msg %}
+                    {{ record_to_table_msg[0] }}
+                {% endif %}
+                {% endwith %}
+            </div>
         </div>
         <div class="modify_record">
             <form class="modify_record__form" method="post" action="/admin_panel">
