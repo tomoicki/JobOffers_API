@@ -1,6 +1,7 @@
-from flask import Flask, request, render_template, flash, redirect, url_for
-from sqlalchemy import inspect, select, text
+from flask import Flask, request, render_template, flash, redirect, url_for, session
+from sqlalchemy import inspect, text
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.exc import IntegrityError
 import pandas
 from os import environ as env
 from dotenv import load_dotenv
@@ -8,8 +9,8 @@ from utilities.PostgreSQL_connection_functions import connection2db
 from utilities.PostgreSQL_tables_declaration import *
 from utilities.PostgreSQL_data_insert import update_tables
 import numpy as np
-import psycopg2
 from psycopg2.extensions import register_adapter, AsIs
+import psycopg2.errors
 
 register_adapter(np.int64, psycopg2._psycopg.AsIs)
 
@@ -47,7 +48,7 @@ def admin_login():
 
 @app.route('/admin_panel', methods=['GET', 'POST'])
 def admin_panel():
-    session = Session()
+    sqlalchemy_session = Session()
     operators = ['=', '>', '<', '>=', '<=', '<>', 'LIKE']
     inspector = inspect(cnx)
     list_of_tables = inspector.get_table_names()
@@ -56,7 +57,9 @@ def admin_panel():
     title = request.form.get('title', False)
     other_table_value = request.form.get('other_table_value', False)
     other_table_optional = request.form.get('other_table_optional', False)
-    modify_record_column = request.form.get('modify_record_column', False)
+    get_record_column = request.form.get('get_record_column', session.get('get_record_column'))
+    modify_record_value = request.form.get('modify_record_value', False)
+    delete_button = request.form.get('delete_record_button', False)
     if request.method == 'GET':
         return render_template('admin_panel.html', title="Admin panel", other_tables=other_tables,
                                modify_tables=modify_tables, operators=operators)
@@ -76,12 +79,11 @@ def admin_panel():
             keys, values = list(job_offer_record.keys()), list(job_offer_record.values())
             try:
                 job_offer_df = pandas.DataFrame([values], columns=keys)
+                print(job_offer_df)
                 update_tables(job_offer_df, Session)
                 flash('Offer successfully added.', category='job_offer')
-                return redirect(url_for('admin_panel'))
             except:
                 flash("Couldn't add new job offer.")
-                return redirect(url_for('admin_panel'))
         if other_table_value:
             table = request.form.get('other_table')
             table_as_schema = find_table(table)
@@ -90,24 +92,48 @@ def admin_panel():
                     record = table_as_schema(other_table_value, other_table_optional)
                 else:
                     record = table_as_schema(other_table_value)
-                session.add(record)
-                session.commit()
+                sqlalchemy_session.add(record)
+                sqlalchemy_session.commit()
                 flash(f'Record to {table} successfully added.', category='other_table')
-                return redirect(url_for('admin_panel'))
             except:
                 flash("Couldn't add new record.")
-                return redirect(url_for('admin_panel'))
-        if modify_record_column:
-            table_name = request.form.get('modify_record_table')
+        if get_record_column:
+            table_name = request.form.get('get_record_table', session.get('table_name'))
             table_as_schema = find_table(table_name)
-            operator1 = request.form.get('modify_record_operator')
-            modify_record_value = request.form.get('modify_record_value')
-            stmt = text(f"\"{table_name}\".{modify_record_column} {operator1} \'{modify_record_value}\'")
-            record = session.query(table_as_schema).filter(stmt).first()
-            execute = table_as_schema.__table__.update().where(table_as_schema.id == record.__dict__['id']).values(
-                {"name": "dunno"})
-            session.execute(execute)
-            session.commit()
+            operator1 = request.form.get('get_record_operator', session.get('operator1'))
+            get_record_value = request.form.get('get_record_value', session.get('get_record_value'))
+            stmt = text(f"\"{table_name}\".{get_record_column} {operator1} \'{get_record_value}\'")
+            record = sqlalchemy_session.query(table_as_schema).filter(stmt).first()
+            if record is not None:
+                record_dict = record.__dict__
+                record_dict = {key: value for key, value in record_dict.items() if 'instance' not in key}
+                record_column_to_change = list(record_dict.keys())
+                record_column_to_change = [item for item in record_column_to_change if 'id' not in item]
+                session['get_record_column'] = get_record_column
+                session['get_record_value'] = get_record_value
+                session['table_name'] = table_name
+                session['operator1'] = operator1
+                if modify_record_value:
+                    modify_record__column_to_change = request.form.get('modify_record__column_to_change')
+                    execute = table_as_schema.__table__.update().where(
+                        table_as_schema.id == record.__dict__['id']).values(
+                        {modify_record__column_to_change: modify_record_value})
+                    sqlalchemy_session.execute(execute)
+                    sqlalchemy_session.commit()
+                    flash('Record successfully modified.', category='record_changed')
+                if delete_button is not False:
+                    try:
+                        execute = table_as_schema.__table__.delete().where(table_as_schema.id == record.__dict__['id'])
+                        sqlalchemy_session.execute(execute)
+                        sqlalchemy_session.commit()
+                        flash('Record successfully deleted.', category='record_deleted')
+                    except IntegrityError:
+                        flash('Foreign key violation. Cannot delete.', category='record_deleted')
+                return render_template('admin_panel.html', other_tables=other_tables, modify_tables=modify_tables,
+                                       operators=operators, record_dict=record_dict, record_column_to_change=record_column_to_change,
+                                       table_as_schema=table_as_schema, record=record)
+            else:
+                flash("Couldn't find record.", category='no_record')
         return render_template('admin_panel.html', other_tables=other_tables, modify_tables=modify_tables,
                                operators=operators)
 

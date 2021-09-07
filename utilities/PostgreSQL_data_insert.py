@@ -60,7 +60,6 @@ def update_tables(data_df: pandas.DataFrame,
                                  scraped_at=data_df.loc[i, 'scraped_at'],
                                  offer_url=data_df.loc[i, 'offer_url']
                                  )
-
             statement = select(Company).where(Company.name == data_df.loc[i, 'company'])
             is_already = session.execute(statement).fetchone()
             if is_already is None:

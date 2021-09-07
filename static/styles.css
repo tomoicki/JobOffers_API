@@ -43,6 +43,41 @@ select {
     display: flex;
     justify-content: center;
 }
+.job_offer__form {
+    margin: 10px;
+}
+.job_offer {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+}
+.first5forms {
+    margin-top: 5px;
+    margin-bottom: 2px;
+}
+.second5forms {
+    margin-bottom: 5px;
+}
+.other_table {
+    margin-bottom: 30px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.other_table__form {
+    float: top;
+}
+.other_table__notification {
+    float: bottom;
+}
+.get_record {
+    margin-bottom: 30px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
 
 .description {
     display: flex;

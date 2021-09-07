@@ -9,7 +9,7 @@
             <div class="query__select">
             SELECT <input type="text" placeholder="column1,column2.." name="columns" value={{old_dict['columns']}}> FROM
             <select name="table" size="w">
-                <option>--- Choose column ---</option>
+                <option>--- Choose table ---</option>
                 {% for table in tables %}
                     <option value={{table}}>{{table}}</option>
                 {% endfor %}
