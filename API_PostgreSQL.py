@@ -79,7 +79,6 @@ def admin_panel():
             keys, values = list(job_offer_record.keys()), list(job_offer_record.values())
             try:
                 job_offer_df = pandas.DataFrame([values], columns=keys)
-                print(job_offer_df)
                 update_tables(job_offer_df, Session)
                 flash('Offer successfully added.', category='job_offer')
             except:
@@ -128,7 +127,7 @@ def admin_panel():
                         sqlalchemy_session.commit()
                         flash('Record successfully deleted.', category='record_deleted')
                     except IntegrityError:
-                        flash('Foreign key violation. Cannot delete.', category='record_deleted')
+                        flash('Foreign key violation. Cannot delete.', category='cannot_delete')
                 return render_template('admin_panel.html', other_tables=other_tables, modify_tables=modify_tables,
                                        operators=operators, record_dict=record_dict, record_column_to_change=record_column_to_change,
                                        table_as_schema=table_as_schema, record=record)

@@ -44,7 +44,9 @@ select {
     justify-content: center;
 }
 .job_offer__form {
-    margin: 10px;
+    padding: 5px;
+    border: 5px outset blue;
+    margin: 20px;
 }
 .job_offer {
     text-align: center;
@@ -58,25 +60,40 @@ select {
 .second5forms {
     margin-bottom: 5px;
 }
-.other_table {
-    margin-bottom: 30px;
+.other_table{
     text-align: center;
     display: flex;
     justify-content: center;
-    flex-direction: column;
 }
 .other_table__form {
-    float: top;
+    padding: 5px;
+    border: 5px outset blue;
+    margin: 20px;
 }
 .other_table__notification {
     float: bottom;
 }
 .get_record {
-    margin-bottom: 30px;
+    margin-top: 25px;
     text-align: center;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
+    padding: 5px;
+    border: 5px outset blue;
+}
+.get_record__form {
+    margin: 5px;
+}
+.modify_record{
+    width: auto;
+}
+.modify_record__form{
+    margin: 10px;
+}
+.delete_record {
+    margin: 5px;
+}
+.cascade_delete_record_button {
+    font-weight: bold;
+    background-color: red;
 }
 
 .description {

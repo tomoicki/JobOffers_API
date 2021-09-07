@@ -28,9 +28,8 @@
                 <input value='Insert job offer' type="submit">
             </form>
         </div>
-        <div class="other_table">
-            <div class="other_table__form">
-                <form  method="post" action="/admin_panel">
+            <div class="other_table">
+                <form class="other_table__form" method="post" action="/admin_panel">
                     Add record to
                         <select name="other_table" size="w">
                             <option>--- Choose table ---</option>
@@ -42,18 +41,15 @@
                     <input type="text" placeholder="value" name="other_table_value">
                     <input type="text" placeholder="optional value" name="other_table_optional">
                     <input value='Add record' type="submit">
+                    <div class="notification">
+                        {% with record_to_table_msg = get_flashed_messages(category_filter=['other_table']) %}
+                        {% if record_to_table_msg %}
+                            {{ record_to_table_msg[0] }}
+                        {% endif %}
+                        {% endwith %}
+                    </div>
                 </form>
             </div>
-            <div class="other_table__notification">
-                <div class="notification">
-                    {% with record_to_table_msg = get_flashed_messages(category_filter=['other_table']) %}
-                    {% if record_to_table_msg %}
-                        {{ record_to_table_msg[0] }}
-                    {% endif %}
-                    {% endwith %}
-                </div>
-            </div>
-        </div>
         <div class="get_record">
             <form class="get_record__form" method="post" action="/admin_panel">
                 Find record from
@@ -73,32 +69,40 @@
                     <input type="text" placeholder="value" name="get_record_value">
                 <input value='Get record' type="submit">
             </form>
-        <div>
             {% if record_dict %}
-                <div class="modify_record">
-                    <form class="modify_record__form" method="post" action="/admin_panel">
-                        Your record:
-                        {% for key, value in record_dict.items()%}
-                            <li>{{ key }} : {{ value }}</li>
+                Your record
+                <table class="results__table">
+                    <tr class="table__header">
+                        {% for key in record_dict.keys() %}
+                            <th class="table__cell">{{key}}</th>
                         {% endfor %}
-                        choose column and value to change
-                        <select name="modify_record__column_to_change" size="w">
-                            <option>--- Choose column ---</option>
-                            {% for column in record_column_to_change %}
-                                <option value={{column}}>{{column}}</option>
-                            {% endfor %}
-                        </select>
-                        <input type="text" placeholder="value" name="modify_record_value">
-                        <input value='Modify record' type="submit">
-                    </form>
-                    <div class="notification">
-                        {% with record_to_table_msg = get_flashed_messages(category_filter=['record_changed']) %}
-                            {% if record_to_table_msg %}
-                                {{ record_to_table_msg[0] }}
-                            {% endif %}
-                        {% endwith %}
-                    </div>
-                    <form class="modify_record__delete" method="post" action="/admin_panel">
+                    </tr>
+                    <tr class="table__row">
+                        {% for value in record_dict.values() %}
+                        <td class="table__cell">{{value}}</td>
+                        {% endfor %}
+                    </tr>
+                </table>
+                <form class="modify_record__form" method="post" action="/admin_panel">
+                    choose column and value to change
+                    <select name="modify_record__column_to_change" size="w">
+                        <option>--- Choose column ---</option>
+                        {% for column in record_column_to_change %}
+                            <option value={{column}}>{{column}}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" placeholder="value" name="modify_record_value">
+                    <input value='Modify record' type="submit">
+                </form>
+                <div class="notification">
+                    {% with record_to_table_msg = get_flashed_messages(category_filter=['record_changed']) %}
+                        {% if record_to_table_msg %}
+                            {{ record_to_table_msg[0] }}
+                        {% endif %}
+                    {% endwith %}
+                </div>
+                <form class="modify_record__delete" method="post" action="/admin_panel">
+                    <div class="delete_record">
                         Delete record
                         <input name="delete_record_button" value='Delete record' type="submit">
                         <div class="notification">
@@ -108,18 +112,25 @@
                                 {% endif %}
                             {% endwith %}
                         </div>
-                    </form>
-                </div>
-                {% else %}
-                <div class="notification">
-                    {% with record_to_table_msg = get_flashed_messages(category_filter=['no_record']) %}
-                        {% if record_to_table_msg %}
-                            {{ record_to_table_msg[0] }}
-                        {% endif %}
-                    {% endwith %}
-                </div>
-            {% endif %}
-        </div>
+                        <div class="notification">
+                            {% with record_to_table_msg = get_flashed_messages(category_filter=['cannot_delete']) %}
+                                {% if record_to_table_msg %}
+                                    {{ record_to_table_msg[0] }}
+                                    <input class="cascade_delete_record_button" name="cascade_delete_record_button" value='Cascade delete' type="submit">
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                    {% else %}
+                        <div class="notification">
+                            {% with record_to_table_msg = get_flashed_messages(category_filter=['no_record']) %}
+                                {% if record_to_table_msg %}
+                                    {{ record_to_table_msg[0] }}
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                    {% endif %}
+                </form>
         </div>
     </div>
 {% endblock %}
