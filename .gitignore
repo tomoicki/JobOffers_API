@@ -138,4 +138,4 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 *.iml
-.idea/JobOffers_API.iml
+*.xml
