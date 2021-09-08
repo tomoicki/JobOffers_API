@@ -5,9 +5,9 @@ from sqlalchemy.exc import IntegrityError
 import pandas
 from os import environ as env
 from dotenv import load_dotenv
-from utilities.PostgreSQL_connection_functions import connection2db
-from utilities.PostgreSQL_tables_declaration import *
-from utilities.PostgreSQL_data_insert import update_tables
+from JobOffers_API.PostgreSQL_connection_functions import connection2db
+from JobOffers_API.PostgreSQL_tables_declaration import *
+from JobOffers_API.PostgreSQL_data_insert import update_tables
 import numpy as np
 from psycopg2.extensions import register_adapter, AsIs
 import psycopg2.errors
