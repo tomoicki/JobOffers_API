@@ -24,7 +24,7 @@ pandas.options.mode.chained_assignment = None
 cnx = connection2db(env['PostgreSQL_host2'], env['PostgreSQL_port2'], env['PostgreSQL_user2'],
                     env['PostgreSQL_password2'], env['PostgreSQL_db_name2'])
 Session = sessionmaker(bind=cnx)
-app = Flask(__name__)
+app = FastAPI()
 app.config['SECRET_KEY'] = 'would like not to have this but apparently i have to'
 
 
