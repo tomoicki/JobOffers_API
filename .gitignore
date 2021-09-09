@@ -7,7 +7,6 @@ __pycache__/
 *.so
 
 # Distribution / packaging
-.idea
 .Python
 build/
 develop-eggs/
@@ -26,6 +25,11 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+
+# Pycharm
+.idea/
+*.iml
+*.xml
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -137,5 +141,4 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-*.iml
-*.xml
+
