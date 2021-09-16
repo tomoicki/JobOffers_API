@@ -1,8 +1,7 @@
 from flask import Blueprint, request, render_template
 from sqlalchemy import inspect
 import pandas
-from database.PostrgeSQL_create_connection import postgre_connection
-
+from JobOffers_API.database.PostrgeSQL_create_connection import postgre_connection
 
 interface = Blueprint('interface', __name__)
 

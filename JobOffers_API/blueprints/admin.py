@@ -4,12 +4,12 @@ from sqlalchemy.exc import IntegrityError
 import pandas
 from os import environ as env
 from dotenv import load_dotenv
-from database.PostgreSQL_tables_declaration import *
-from database.PostgreSQL_data_insert import update_tables
+from JobOffers_API.database.PostgreSQL_tables_declaration import *
+from JobOffers_API.database.PostgreSQL_data_insert import update_tables
 import numpy
 from psycopg2.extensions import register_adapter
 import psycopg2.errors
-from database.PostrgeSQL_create_connection import postgre_session, postgre_connection
+from JobOffers_API.database.PostrgeSQL_create_connection import postgre_session, postgre_connection
 
 register_adapter(numpy.int64, psycopg2._psycopg.AsIs)
 load_dotenv()
