@@ -1,7 +1,7 @@
 from flask import Blueprint, request, render_template
 from sqlalchemy import inspect
 import pandas
-from JobOffers_API.database.PostrgeSQL_create_connection import postgre_connection
+from job_offers_api.database.PostrgeSQL_create_connection import postgre_connection
 
 interface = Blueprint('interface', __name__)
 
@@ -12,9 +12,10 @@ def showtable():
     operators = ['=', '>', '<', '>=', '<=', '<>', 'LIKE']
     inspector = inspect(postgre_connection)
     list_of_tables = inspector.get_table_names()
+    list_of_tables = [table for table in list_of_tables if table != 'User']
     table_name = request.args.get("table", False)
     old_keys = ['columns', 'key1', 'operator1', 'value1', 'key2', 'operator2', 'value2', 'key3', 'operator3', 'value3']
-    if table_name:
+    if table_name and table_name != 'User':
         columns = request.args.get("columns", '*')
         key1 = request.args.get("key1", False)
         operator1 = request.args.get("operator1", False)

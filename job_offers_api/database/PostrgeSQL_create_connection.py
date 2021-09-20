@@ -1,7 +1,7 @@
 from sqlalchemy.orm import sessionmaker
 from os import environ as env
 from dotenv import load_dotenv
-from JobOffers_API.database.PostgreSQL_connection_functions import connection2db
+from job_offers_api.database.PostgreSQL_connection_functions import connection2db
 
 load_dotenv()
 

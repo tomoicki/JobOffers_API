@@ -1,8 +1,8 @@
 from flask import Flask
-from JobOffers_API.blueprints.home import home as home_blueprint
-from JobOffers_API.blueprints.admin import admin as admin_blueprint
-from JobOffers_API.blueprints.raw import raw as raw_blueprint
-from JobOffers_API.blueprints.interface import interface as interface_blueprint
+from job_offers_api.blueprints.home import home as home_blueprint
+from job_offers_api.blueprints.admin import admin as admin_blueprint
+from job_offers_api.blueprints.raw import raw as raw_blueprint
+from job_offers_api.blueprints.interface import interface as interface_blueprint
 
 
 def create_app():

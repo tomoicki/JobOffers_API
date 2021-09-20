@@ -204,3 +204,19 @@ def find_table(given_name):
     for table in tables_list:
         if table.__name__ == given_name:
             return table
+
+
+class User(Base):
+    __tablename__ = 'User'
+    #  fields
+    name = Column(String)
+    password = Column(String)
+    email = Column(String, primary_key=True)
+    AccessLevel = Column(Integer)
+
+    def getname(self):
+        return self.name
+    def getpass(self):
+        return self.password
+
+

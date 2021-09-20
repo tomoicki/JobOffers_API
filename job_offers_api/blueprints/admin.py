@@ -1,15 +1,15 @@
 from flask import Blueprint, request, render_template, flash, redirect, url_for, session
-from sqlalchemy import inspect, text
+from sqlalchemy import inspect, text, select
 from sqlalchemy.exc import IntegrityError
 import pandas
 from os import environ as env
 from dotenv import load_dotenv
-from JobOffers_API.database.PostgreSQL_tables_declaration import *
-from JobOffers_API.database.PostgreSQL_data_insert import update_tables
 import numpy
 from psycopg2.extensions import register_adapter
 import psycopg2.errors
-from JobOffers_API.database.PostrgeSQL_create_connection import postgre_session, postgre_connection
+from job_offers_api.database.PostrgeSQL_create_connection import postgre_session, postgre_connection
+from job_offers_api.database.PostgreSQL_tables_declaration import *
+from job_offers_api.database.PostgreSQL_data_insert import update_tables
 
 register_adapter(numpy.int64, psycopg2._psycopg.AsIs)
 load_dotenv()
@@ -23,7 +23,10 @@ def admin_login():
     elif request.method == 'POST':
         name = request.form.get('name')
         password = request.form.get('password')
-        if name != env['admin'] or password != env['password']:
+        # get me admin
+        sqlalchemy_session = postgre_session()
+        admin_user = sqlalchemy_session.query(User).filter(User.AccessLevel == 1000).first().__dict__
+        if name != admin_user['name'] or password != admin_user['password']:
             flash('Please check your login details and try again.')
             return redirect(url_for('admin.admin_login'))
         return redirect(url_for('admin.admin_panel'))
