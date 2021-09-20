@@ -23,11 +23,15 @@ def admin_login():
     elif request.method == 'POST':
         name = request.form.get('name')
         password = request.form.get('password')
+        reset_button = request.form.get('admin_creds_forgot_button', False)
+        if reset_button is not False:
+            flash('', category='reset_pass')
+            return redirect(url_for('admin.admin_login'))
         # get me admin
         sqlalchemy_session = postgre_session()
         admin_user = sqlalchemy_session.query(User).filter(User.AccessLevel == 1000).first().__dict__
         if name != admin_user['name'] or password != admin_user['password']:
-            flash('Please check your login details and try again.')
+            flash('Please check your login details and try again.', category='bad_creds')
             return redirect(url_for('admin.admin_login'))
         return redirect(url_for('admin.admin_panel'))
 

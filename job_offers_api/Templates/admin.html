@@ -8,14 +8,29 @@
                 <div class="admin_pass"><input type="password" name="password" placeholder="u're goddamn"></div>
                 <div class="admin_button"><button>Login</button></div>
             </form>
+            <div class="notification">
+            {% with messages = get_flashed_messages(category_filter=['bad_creds']) %}
+            {% if messages %}
+                {{ messages[0] }}
+            {% endif %}
+            {% endwith %}
+            </div>
         </div>
-        <div class="notification">
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {{ messages[0] }}
-        {% endif %}
-        {% endwith %}
-        </div>
+    </div>
+    <div class="admin_creds_forgot">
+        <form method="POST" action="/admin">
+            <input name="admin_creds_forgot_button" value='Gimme new creds' type="submit">
+        </form>
+        {% with record_to_table_msg = get_flashed_messages(category_filter=['reset_pass']) %}
+            {% if record_to_table_msg %}
+                <div class="admin_creds_reset">
+                    <form method="post" action="/admin">
+                        <div><input type="text" name="admin_new_creds" placeholder="well.." autofocus=""></div>
+                        <div class="admin_button"><input name="admin_creds_reset" value='Reset' type="submit"></div>
+                    </form>
+                </div>
+            {% endif %}
+         {% endwith %}
     </div>
 </div>
 {% endblock %}

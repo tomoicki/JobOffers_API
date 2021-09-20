@@ -17,6 +17,7 @@ select {
 }
 
 .notification{
+    justify-content: center;
     font-weight: bold;
     color: crimson;
     margin-top: 10px;
@@ -24,13 +25,14 @@ select {
 }
 .admin_form {
     display: flex;
-    justify-content: center;
-    float: top;
+    flex-direction: column;
+    align-items: center;
 }
 .admin_page {
     margin-top: 30px;
     display: flex;
     justify-content: center;
+    flex-direction: column;
 }
 .admin_name {
     margin-top: 20px;
@@ -94,6 +96,19 @@ select {
 .cascade_delete_record_button {
     font-weight: bold;
     background-color: red;
+}
+
+.admin_creds_forgot{
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.admin_creds_reset{
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .description {
