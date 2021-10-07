@@ -29,8 +29,8 @@ def admin_login():
             return redirect(url_for('admin.admin_login'))
         # get me admin
         sqlalchemy_session = postgre_session()
-        admin_user = sqlalchemy_session.query(User).filter(User.AccessLevel == 1000).first().__dict__
-        if name != admin_user['name'] or password != admin_user['password']:
+        admin_user = sqlalchemy_session.query(User).filter(User.AccessLevel == 1000).first()
+        if name != admin_user.getname() or password != admin_user.getpass():
             flash('Please check your login details and try again.', category='bad_creds')
             return redirect(url_for('admin.admin_login'))
         return redirect(url_for('admin.admin_panel'))

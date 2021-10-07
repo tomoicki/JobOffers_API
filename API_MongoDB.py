@@ -2,7 +2,7 @@ from flask import Flask
 import pandas
 from os import environ as env
 from dotenv import load_dotenv
-from job_offers_api.database import connection_to_mongodb
+from job_offers_api.database.MongoDB_connection_functions import connection_to_mongodb
 
 
 load_dotenv()

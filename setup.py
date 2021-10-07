@@ -4,7 +4,7 @@ with open(file="README.md", mode="r") as readme_handle:
     long_description = readme_handle.read()
 
 setup(
-    name='',
+    name='job_offers_api',
     version='0.0.1',
     description='RestAPI to access data.',
     long_description=long_description,
@@ -12,13 +12,13 @@ setup(
     packages=find_packages(),
     python_requires=">=3.6",
     install_requires=[
-        'pandas==1.3.2',
-        'SQLAlchemy==1.4.23',
-        'pymongo==3.12.0',
-        'shortuuid==1.0.1',
-        'Flask==2.0.1',
-        'python-dotenv==0.19.0',
-        'numpy==1.21.2',
-        'psycopg2==2.9.1',
+        'pandas~=1.3',
+        'SQLAlchemy~=1.4',
+        'pymongo~=3.12',
+        'shortuuid~=1.0',
+        'Flask~=2.0',
+        'python-dotenv~=0.19',
+        'numpy~=1.21',
+        'psycopg2~=2.9',
     ],
 )
